@@ -1,0 +1,41 @@
+{
+	"manifest_version": 2,
+	"name": "__MSG_extensionName__",
+	"description": "__MSG_extensionDescription__",
+	"default_locale": "pt_BR",
+	"version": "1.9",
+	
+	"icons": {
+		"16": "/icons/icon-16.png",
+		"32": "/icons/icon-32.png",
+		"64": "/icons/icon-64.png"
+	},
+	
+	"content_scripts":[
+		{
+			"matches":["<all_urls>"],
+			"js":["/scripts/script.js"],
+			"all_frames": true
+		}
+	],
+	
+	"page_action":{
+		"browser_style": true,
+		"default_icon":{
+			"16": "/icons/enabled-16.png",
+			"32": "/icons/enabled-32.png"
+		},
+		"default_title": "__MSG_enabled__"
+	},
+	
+	"background": {
+		"scripts": ["/scripts/background.js"]
+	},
+	
+	"options_ui":{	
+		"page": "/html/options.html"
+	},
+	
+	"permissions": ["<all_urls>", "storage", "tabs"]
+
+}

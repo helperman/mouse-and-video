@@ -1,0 +1,73 @@
+{
+	"extensionName": {
+		"message": "Mouse & Video"
+	},
+
+	"extensionDescription": {
+		"message": "Com esta extensão você pode controlar o vídeo com a roda do mouse."
+	},
+	
+	"volume_title":{
+		"message": "Velocidade da mudança de volume: "
+	},
+
+	"fb_title":{
+		"message": "Incrementos para adiantar e retornar (em segundos): "
+	},
+
+	"left":{
+		"message": "Esquerda (Padrão: 5)"
+	},
+
+	"middle":{
+		"message": "Meio (Padrão 2)"
+	},
+
+	"right":{
+		"message": "Direita (Padrão 10)"
+	},
+
+	"slow":{
+		"message": "Devagar"
+	},
+
+	"medium":{
+		"message": "Médio"
+	},
+
+	"fast":{
+		"message": "Rápido"
+	},
+
+	"enabled":{
+		"message": "Ativado"
+	},
+
+	"disabled":{
+		"message": "Desativado"
+	},	
+	
+	"always":{
+		"message": "Desativado neste site"
+	},	
+	
+	"vonly":{
+		"message": "Volume apenas"
+	},	
+	
+	"ponly":{
+		"message": "Playback apenas (O valor do 'Meio' será usado)"
+	},	
+	
+	"both":{
+		"message": "Tudo"
+	},	
+	
+	"mode_title":{
+		"message": "Usar toda a área do vídeo para mudar:"
+	},	
+	
+	"allowFS":{
+		"message": "Habilitar tela cheia (Digite 'about:config' na barra de endereço e clique no botão de aviso. Depois, escreva 'full-screen-api.allow-trusted-requests-only' e mude o valor para 'false'"
+	}
+}
