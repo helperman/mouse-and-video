@@ -11,7 +11,7 @@ The video player will be divided like this:
 
 These areas are hidden, but it shouldn't take long to get used to where each one is. Just scroll up or down on them to control the video playback.
 
-It's also possible to change the video brightness by holding the 'Shift' key while scrolling anywhere withing the player.
+It's also possible to change the video brightness by holding the 'Shift' key while scrolling anywhere within the player.
 
 To be able to switch to fullscreen you have to follow the steps below:
 <ul>
