@@ -12,7 +12,7 @@
 	},
 
 	"fb_title":{
-		"message": "Incrementos para adiantar e retornar (em segundos): "
+		"message": "Incrementos para adiantar e retroceder (em segundos): "
 	},
 
 	"left":{
@@ -52,11 +52,11 @@
 	},	
 	
 	"vonly":{
-		"message": "Volume apenas"
+		"message": "Volume"
 	},	
 	
 	"ponly":{
-		"message": "Playback apenas (O valor do 'Meio' será usado)"
+		"message": "Adiantar/retroceder (O valor do 'Meio' será usado)"
 	},	
 	
 	"both":{

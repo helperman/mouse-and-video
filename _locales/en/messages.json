@@ -52,11 +52,11 @@
 	},	
 	
 	"vonly":{
-		"message": "Volume only"
+		"message": "Change volume"
 	},	
 	
 	"ponly":{
-		"message": "Playback only ('Middle' value will be used)"
+		"message": "Seek backward/forward ('Middle' value will be used)"
 	},	
 	
 	"both":{
@@ -64,7 +64,7 @@
 	},	
 	
 	"mode_title":{
-		"message": "Use the whole video area to change:"
+		"message": "Use the whole video area to:"
 	},	
 	
 	"allowFS":{
