@@ -21,3 +21,4 @@ To be able to switch to fullscreen you have to follow the steps below:
   <li>Go to the extension's preferences page and click the checkbox to enable fullscreen
 </ul>
 
+Feel free to contribute!
