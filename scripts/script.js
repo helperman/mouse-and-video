@@ -22,6 +22,11 @@ let observer = new MutationObserver(function(mutationList, observer){
 var config = { attributes: true, childList: true, subtree: true };
 observer.observe(document, config);
 
+function criaJanela(tempo){
+	chrome.runtime.sendMessage({
+		popup: tempo
+	});
+}
 
 function run(){
 	let left, middle, right, multiplier, mode, fs, firstMov;
@@ -103,7 +108,12 @@ function run(){
 		brightness += 1 * (movimento < 0 ? (1 * 0.1) : (-1 * 0.1));
 		brightness = parseFloat(Math.min(Math.max(brightness, 0), 1).toFixed(1));
 		if (e.shiftKey) { 
-			this.video.style.filter =  "brightness("+brightness+")" 
+			this.video.style.filter =  "brightness("+brightness+")";
+		}
+		else if(e.altKey){
+			//console.log("opa");
+			criaJanela(Math.floor(this.video.currentTime));
+			this.video.pause();
 		}
 		else{
 			if(mode == "ponly"){

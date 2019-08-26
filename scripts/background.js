@@ -2,6 +2,32 @@ chrome.runtime.onMessage.addListener(function(message, sender){
 	if(message.mostraIcone){
 		chrome.pageAction.show(sender.tab.id);
 	}
+	else if(message.popup){
+		let videoId = sender.url.substring(sender.url.length - 11);
+		browser.windows.create({
+			width: 350,
+			height: 230,
+			type: "popup",
+			url: "https://www.youtube.com/embed/" + videoId + "?start=" + message.popup + "&autoplay=1",
+			titlePreface: videoId
+		}).then(info => {
+			//console.log(info);
+			//browser.tabs.getCurrent().then(i => console.log(i));
+			//browser.tabs.remove(info.tabs[0].id);
+			// browser.tabs.executeScript(
+			// 	{
+			// 		code: "console.log('fala');"
+			// 	}
+			// );
+			browser.windows.update(
+				info.id,
+				{
+					left: screen.width - 350,
+					top: screen.height - 250
+				}
+			);
+		});
+	}
 
 	// Aqui vamos verificar se a extensão deve ser desativada neste site.
 	// Se o usuário desativou então o domain fica guardado.
