@@ -22,9 +22,11 @@ let observer = new MutationObserver(function(mutationList, observer){
 var config = { attributes: true, childList: true, subtree: true };
 observer.observe(document, config);
 
-function criaJanela(tempo){
+function popup(tempo, acao){
 	chrome.runtime.sendMessage({
-		popup: tempo
+		popup: true,
+		tempo: tempo,
+		acao: acao
 	});
 }
 
@@ -65,6 +67,14 @@ function run(){
 			}
 		}
 	});
+
+
+	// Pause the video only when it starts playing on the popup
+	document.querySelector("video").onplaying = () => {
+		browser.runtime.sendMessage({
+			playing: true
+		});
+	}	
 
 	function mudaVolume(movimento, video){
 		if(video.muted){
@@ -111,9 +121,16 @@ function run(){
 			this.video.style.filter =  "brightness("+brightness+")";
 		}
 		else if(e.altKey){
-			//console.log("opa");
-			criaJanela(Math.floor(this.video.currentTime));
-			this.video.pause();
+			if(movimento > 0){
+				popup(Math.floor(this.video.currentTime), "criar");
+				
+				// This is a flag to know which video to play when getting back to the tab from the popup
+				// in case there is more than one in the page
+				this.video.setAttribute("playing_on_popup", true);
+			}
+			else{
+				popup(Math.floor(this.video.currentTime), "fechar");
+			}
 		}
 		else{
 			if(mode == "ponly"){
@@ -192,6 +209,8 @@ function run(){
 				e.target.video = vid;
 				e.target.onwheel = wheel;
 				document.pvwm = e.target;
+
+				
 			}
 		}			
 	}	
