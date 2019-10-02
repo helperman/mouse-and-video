@@ -1,103 +1,52 @@
-let popupCreated = false;
+//let popupCreated = false;
 let scriptExecuted = false;
-let popupId, tabIndex, windowId, startTimePopup;
+let popupId, tabIndex, windowId, popupTabId;
 chrome.runtime.onMessage.addListener(function(message, sender){
 	if(message.mostraIcone){
 		chrome.pageAction.show(sender.tab.id);
 	}
-	else if(message.playing){
-		
-		// This code will be executed when the video starts playing on the popup
-		// it will pause the video on the tab
-		if(popupId && scriptExecuted === false){
-			scriptExecuted = true;
-			browser.tabs.query({
-				index: tabIndex,
-				windowId: windowId
-			}).then((tab) => {
-				browser.tabs.executeScript(
-					tab[0].id,
-					{
-						code: `document.querySelector('video[playing_on_popup]').pause();
-							   var valuesWhenPaused = [document.querySelector('video[playing_on_popup]').currentTime,
-														  document.querySelector('video[playing_on_popup]').volume,
-														  document.querySelector('video[playing_on_popup]').playbackRate];
-														  valuesWhenPaused;`
-						// code: `document.querySelector('video[playing_on_popup]').pause();
-						// 	   var timeWhenPaused = document.querySelector('video[playing_on_popup]').currentTime;timeWhenPaused;`
-					}
-				).then((result) => {
-					// When the video pauses we get the currentTime and send it to the popup
-					browser.tabs.query({
-						windowId: popupId
-					}).then((tab) => {
-						browser.tabs.executeScript(
-							tab[0].id,
-							{
-								code: `document.querySelector('video').currentTime =${result[0][0]};
-									   document.querySelector('video').volume =${result[0][1]};
-									   document.querySelector('video').playbackRate =${result[0][2]};`
-							}
-						);
-					});
-				});
-			});
-		}
-	}
 	else if(message.popup){
-		if(message.acao === "criar" && popupCreated == false){
+		if(message.acao === "criar"){
 			tabIndex = sender.tab.index;
 			windowId = sender.tab.windowId;
-			popupCreated = true;
-			let videoId = sender.tab.url.substring(sender.tab.url.length - 11);
 			browser.windows.create({
-				width: 350,
+				width: 370,
 				height: 230,
 				type: "popup",
-				url: "https://www.youtube.com/embed/" + videoId + "?start=" + message.tempo + "&autoplay=1",
-				titlePreface: ":: Mouse & Video :: "
+				tabId: sender.tab.id
 			}).then(info => {
+				popupTabId = info.tabs[0].id;
 				popupId = info.id;
-				browser.windows.onRemoved.addListener(winId => {
-					if(winId === info.id) {
-						// Reset variables
-						popupCreated = scriptExecuted = false;
-						popupId = tabIndex = windowId = undefined;						
-					}
-				});
-
 				browser.windows.update(
 					info.id,
 					{
-						left: screen.width - 350,
+						left: screen.width - 370,
 						top: screen.height - 250
 					}
 				);
 			});
 		}
 		else if(message.acao === "fechar"){
-			browser.windows.remove(popupId);
-			browser.tabs.highlight({
-				windowId: windowId,
-				tabs: [tabIndex]
-			}).then(() => {
-				browser.tabs.query({active:true}).then((info) => {
-					browser.tabs.executeScript(
-						info[0].id,
-						{
-						code: `document.querySelector("video[playing_on_popup]").currentTime = ${message.tempo};
-							   document.querySelector("video[playing_on_popup]").play();
-							   document.querySelector("video[playing_on_popup]").setAttribute("playing_on_popup", false);`
-						}
-					);		
+			// Move back to main windows
+			browser.tabs.move(
+				popupTabId,
+				{
+					windowId: windowId,
+					index: tabIndex
+				}
+			).then(info => {
+				browser.tabs.highlight({
+					windowId: windowId,
+					tabs: [info[0].index]
 				});
+				popupId = tabIndex = windowId = undefined;
 			});
-		}	
+		}
 	}
 
 	// Aqui vamos verificar se a extensão deve ser desativada neste site.
 	// Se o usuário desativou então o domain fica guardado.
-	let domain = sender.tab.url.match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im)[0];		
+	let domain = sender.tab.url.match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im)[0];
 	chrome.storage.local.get(domain, function(info){
 		// Se não tiver nada então não desativou
 		if(Object.keys(info).length == 0) {
@@ -123,7 +72,7 @@ chrome.pageAction.onClicked.addListener(function(tab){
 				tab.id,
 				{
 					run: true
-				});			
+				});
 			setIcon("enabled", tab.id);
 		}
 		else{
@@ -138,9 +87,8 @@ chrome.pageAction.onClicked.addListener(function(tab){
 			});
 			setIcon("disabled", tab.id);
 		}
-	});	
+	});
 });
-
 
 function setIcon(status, id){
 	chrome.pageAction.setIcon({
@@ -150,9 +98,9 @@ function setIcon(status, id){
 			32: "icons/"+status+"-32.png"
 		}
 	});
-	
+
 	chrome.pageAction.setTitle({
 		tabId: id,
 		title: chrome.i18n.getMessage(status)
-	});	
+	});
 }
