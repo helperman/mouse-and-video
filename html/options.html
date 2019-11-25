@@ -6,13 +6,6 @@
 	</head>
 	<body>
 		<form>
-			<span id="volume">Volume change speed: </span>
-			<select>
-				<option	id="slow" value=1>slow</option>
-				<option id="medium" value=3>medium</option>
-				<option id="fast" value=5>fast</option>
-			</select>
-			</br></br>
 			<span id="fb">Forward/backward increments (in seconds): </span>
 			<ul>
 				<li id="left">Left side: </li>
@@ -22,13 +15,11 @@
 				<li id="right">Right side: </li>
 					<input name="right" type="number"></input>
 			</ul>
-			</br></br>
+			</br>
 			<span id="mode">Use the whole video area to:</span><br>
 				<input id="vonly" type="radio" name="mode" value="vonly">Change volume<br>
 				<input id="ponly" type="radio" name="mode" value="ponly">Seek backward/forward ("Middle" value will be used)<br>
 				<input id="both" type="radio" name="mode" value="both" checked>Everything<br>
-			</br></br>
-			<input id="allowFS" type="checkbox" name="fullscreen" value="allowFS">Enable fullscreen (Please type 'about:config' in the address bar and click the button. Then type 'full-screen-api.allow-trusted-requests-only' and change it to 'false')<br>
 		</form>
 	</body>
 </html>

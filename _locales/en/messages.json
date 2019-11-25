@@ -6,10 +6,6 @@
 	"extensionDescription": {
 		"message": "This extension allows you to control a video player by using the mouse wheel."
 	},
-	
-	"volume_title":{
-		"message": "Volume change speed: "
-	},
 
 	"fb_title":{
 		"message": "Backward/Forward increments (in seconds): "
@@ -27,47 +23,31 @@
 		"message": "Right (Default: 10)"
 	},
 
-	"slow":{
-		"message": "Slow"
-	},
-
-	"medium":{
-		"message": "Medium"
-	},
-
-	"fast":{
-		"message": "Fast"
-	},
-
 	"enabled":{
 		"message": "Enabled"
 	},
 
 	"disabled":{
 		"message": "Disabled"
-	},	
-	
+	},
+
 	"always":{
 		"message": "Disabled on this site"
-	},	
-	
+	},
+
 	"vonly":{
 		"message": "Change volume"
-	},	
-	
+	},
+
 	"ponly":{
 		"message": "Seek backward/forward ('Middle' value will be used)"
-	},	
-	
+	},
+
 	"both":{
 		"message": "Everything"
-	},	
-	
+	},
+
 	"mode_title":{
 		"message": "Use the whole video area to:"
-	},	
-	
-	"allowFS":{
-		"message": "Enable fullscreen (Please type 'about:config' in the address bar and click the button. Then type 'full-screen-api.allow-trusted-requests-only' and change it to 'false'"
 	}
 }
