@@ -1,29 +1,49 @@
 document.onwheel = openInPopup
 
+// Fix for netflix seeking issue
+let isNetflix = false
+document.addEventListener('mvNetflix', function (e) {
+  isNetflix = true
+})
+const script = document.createElement('script')
+script.textContent = `if (netflix){
+  document.dispatchEvent(new CustomEvent('mvNetflix', { isNetflix: true }));
+  document.addEventListener('mvNetflixSeek', function (e) {
+    const player = netflix.appContext.state.playerApp.getAPI().videoPlayer.
+    getVideoPlayerBySessionId(netflix.appContext.state.playerApp.getAPI().
+    videoPlayer.getAllPlayerSessionIds()[0])
+    player.seek(e.detail)
+  })
+}`;
+(document.head || document.documentElement).appendChild(script)
+script.remove()
+
 /* This combination: Wheel Down + Wheel Up + Wheel Down
 will show the videos list from which the user can choose
 one to play in the popup or, if there's only one video playing,
 open this video in the popup. */
 let wheelUp, wheelDown, lastMovement
 function openInPopup (e) {
-  // e.deltaY > 0 = Wheel Down
-  // e.deltaY < 0 = Wheel Up
-  lastMovement = e.deltaY
-  if (e.deltaY > 0) {
-    wheelDown = true
-    setTimeout(() => {
-      if (wheelUp && lastMovement > 0) {
-        // Combo activated
-        // Ask background script if theres videos playing
-        browser.runtime.sendMessage({
-          combo_fired: true
-        })
+  if (mvObject.shortcut || mvObject.shortcut === undefined) {
+    // e.deltaY > 0 = Wheel Down
+    // e.deltaY < 0 = Wheel Up
+    lastMovement = e.deltaY
+    if (e.deltaY > 0) {
+      wheelDown = true
+      setTimeout(() => {
+        if (wheelUp && lastMovement > 0) {
+          // Combo activated
+          // Ask background script if theres videos playing
+          browser.runtime.sendMessage({
+            combo_fired: true
+          })
+        }
+        wheelUp = wheelDown = false
+      }, 300)
+    } else {
+      if (wheelDown) {
+        wheelUp = true
       }
-      wheelUp = wheelDown = false
-    }, 300)
-  } else {
-    if (wheelDown) {
-      wheelUp = true
     }
   }
 }
@@ -111,12 +131,7 @@ chrome.runtime.onMessage.addListener(function (message) {
     }
   } else if (message.has_video_playing) {
     return Promise.resolve({ response: hasVideoPlaying().length > 0 })
-  } else if (message.tabIndex) {
-    mvObject.tabIndex = message.tabIndex
-    mvObject.windowId = message.windowId
-    mvObject.popupTabId = message.popupTabId
   }
-
 })
 
 // Source: https://stackoverflow.com/a/44325898/5708169
@@ -155,6 +170,7 @@ chrome.storage.local.get(function (options) {
     middle: options.middle || 2,
     right: options.right || 10,
     mode: options.mode || 'both',
+    shortcut: options.shortcut,
     brightness: 1,
     volume: 0,
     popup: (action, activatePopupTab) => {
@@ -189,6 +205,7 @@ function open_popup () {
     document.documentElement.style.overflow = 'hidden'
 
     document.mv_popup_element.className += ' popup_style'
+
     document.body.insertBefore(document.mv_popup_element, document.body.firstChild)
 
     // Add an event listener to play/pause video when clicking on it
@@ -250,12 +267,12 @@ function close_popup (activatePopupTab) {
   }, 500)
 }
 
-function run () {
-  // Update values if user changes them in the options
-  chrome.storage.onChanged.addListener(function (changes) {
-    mvObject[Object.keys(changes)[0]] = changes[Object.keys(changes)[0]].newValue
-  })
+// Update values if user changes them in the options
+chrome.storage.onChanged.addListener(function (changes) {
+  mvObject[Object.keys(changes)[0]] = changes[Object.keys(changes)[0]].newValue
+})
 
+function run () {
   function mudaVolume (movimento, video) {
     if (video.muted) {
       video.muted = false
@@ -278,13 +295,21 @@ function run () {
     video.playbackRate = parseFloat(Math.min(Math.max(video.playbackRate, 0.25), 4).toFixed(2))
   }
 
+  let seekTo
   function mudaTempo (cX, movimento, video) {
+    /* Seek */
+    seekTo = video.currentTime
     if (cX <= video.clientWidth / 3) {
-      video.currentTime += 1 * (movimento < 0 ? (1 * mvObject.left) : (-1 * mvObject.left))
+      seekTo += 1 * (movimento < 0 ? (1 * mvObject.left) : (-1 * mvObject.left))
     } else if (cX > video.clientWidth / 3 && cX <= (video.clientWidth / 3) * 2) {
-      video.currentTime += 1 * (movimento < 0 ? (1 * mvObject.middle) : (-1 * mvObject.middle))
+      seekTo += 1 * (movimento < 0 ? (1 * mvObject.middle) : (-1 * mvObject.middle))
     } else {
-      video.currentTime += 1 * (movimento < 0 ? (1 * mvObject.right) : (-1 * mvObject.right))
+      seekTo += 1 * (movimento < 0 ? (1 * mvObject.right) : (-1 * mvObject.right))
+    }
+    if (isNetflix) {
+      document.dispatchEvent(new CustomEvent('mvNetflixSeek', { detail: parseInt(seekTo) * 1000 })) // milliseconds
+    } else {
+      video.currentTime = seekTo
     }
   }
 

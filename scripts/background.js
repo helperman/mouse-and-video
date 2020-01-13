@@ -1,17 +1,25 @@
-// //let popupWindowId, popupTabId, originalPosition, activeTabId
-// let popupTabId, originalPosition, activeTabId
 let run = true
+let popupOpening
+let comboFired
+let previousTabIndex
 let popups = {}
 
-chrome.runtime.onMessage.addListener(function (message, sender) {
-  // listener for the shortcut
-  browser.commands.onCommand.addListener((command) => {
-
+browser.tabs.onActivated.addListener(info => {
+  browser.windows.get(info.windowId).then(window => {
+    if (window.type !== 'popup' && !popupOpening) {
+      browser.tabs.get(info.previousTabId).then(tab => {
+        previousTabIndex = tab.index
+      })
+    }
   })
+})
+
+chrome.runtime.onMessage.addListener(function (message, sender) {
 
   /* The user did a Wheel Down + Wheel Up + Wheel Down combo.
   Send a message to all tabs asking if they are playing videos. */
   if (message.combo_fired) {
+    comboFired = true
     /* This is a list that will contain the title of the tabs
     that respond to our message along with a screenshot of the video. */
     const videosPlaying = new Set()
@@ -66,12 +74,21 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
     chrome.pageAction.show(sender.tab.id)
   } else if (message.popup) {
     if (message.acao === 'criar') {
+      popupOpening = true
+      if(!comboFired) {
+        browser.tabs.highlight({
+          windowId: sender.tab.windowId,
+          tabs: [previousTabIndex]
+        })
+      }
       browser.windows.create({
         width: 370,
         height: 230,
         type: 'popup',
         tabId: sender.tab.id
       }).then(info => {
+        popupOpening = false
+        comboFired = false
         popups[info.id] = {
           tabIndex: sender.tab.index,
           windowId: sender.tab.windowId,

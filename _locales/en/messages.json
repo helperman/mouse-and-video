@@ -49,5 +49,9 @@
 
 	"mode_title":{
 		"message": "Use the whole video area to:"
+	},
+
+    "shortcut":{
+		"message": "Use shortcut to open popup"
 	}
 }
