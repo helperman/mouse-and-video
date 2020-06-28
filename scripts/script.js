@@ -329,11 +329,14 @@ function run () {
       } else {
         if (mvObject.mode === 'ponly') {
           vid.currentTime += 1 * (movimento < 0 ? (1 * mvObject.middle) : (-1 * mvObject.middle))
+        } else if (mvObject.mode === 'tonly') {
+          mudaTempo(cX, movimento, vid)
         } else if (mvObject.mode === 'vonly') {
           mudaVolume(movimento, vid)
         } else {
           if (e.offsetY <= vid.clientHeight / 2) {
-            if (cX < vid.clientWidth - ((90 / 100) * vid.clientWidth)) {
+			  // upper part of a player
+            if (cX < vid.clientWidth - ((90 / 100) * vid.clientWidth)) {	// fullscreen/popup feature
               if (movimento > 0) {
                 // Close popup and stay on the current tab
                 if (document.mv_playing_on_popup) {
@@ -391,6 +394,7 @@ function run () {
               mudaVolume(movimento, vid)
             }
           } else {
+			// bottom part of player (seek playback 5/2/10 sec)
             mudaTempo(cX, movimento, vid)
           }
         }
