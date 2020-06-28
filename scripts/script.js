@@ -273,38 +273,37 @@ chrome.storage.onChanged.addListener(function (changes) {
 })
 
 function run () {
-  function mudaVolume (movimento, video) {
+  function changeVolume (delta, video) {
     if (video.muted) {
       video.muted = false
       video.volume = 0
     }
     mvObject.volume = video.volume
-    mvObject.volume += 1 * (movimento < 0 ? (1 * (0.01 * 3)) : (-1 * (0.01 * 3)))
+    mvObject.volume += 1 * (delta < 0 ? (1 * (0.01 * 3)) : (-1 * (0.01 * 3)))
     video.volume = parseFloat(Math.min(Math.max(mvObject.volume, 0), 1).toFixed(2))
   }
 
   let firstMov
-  function mudaVelocidade (movimento, video) {
-    firstMov = movimento
+  function changePlaybackRate (delta, video) {
+    firstMov = delta
     setTimeout(function (mov) {
       if (firstMov !== mov) {
         video.playbackRate = video.defaultPlaybackRate
       }
     }, 150, firstMov)
-    video.playbackRate += 1 * (movimento < 0 ? (1 * 0.25) : (-1 * 0.25))
+    video.playbackRate += 1 * (delta < 0 ? (1 * 0.25) : (-1 * 0.25))
     video.playbackRate = parseFloat(Math.min(Math.max(video.playbackRate, 0.25), 4).toFixed(2))
   }
 
   let seekTo
-  function mudaTempo (cX, movimento, video) {
-    /* Seek */
+  function seekVideoByAreas (cX, delta, video) {
     seekTo = video.currentTime
     if (cX <= video.clientWidth / 3) {
-      seekTo += 1 * (movimento < 0 ? (1 * mvObject.left) : (-1 * mvObject.left))
+	  seekTo += getIncrement(delta, mvObject.left)
     } else if (cX > video.clientWidth / 3 && cX <= (video.clientWidth / 3) * 2) {
-      seekTo += 1 * (movimento < 0 ? (1 * mvObject.middle) : (-1 * mvObject.middle))
+	  seekTo += getIncrement(delta, mvObject.middle)
     } else {
-      seekTo += 1 * (movimento < 0 ? (1 * mvObject.right) : (-1 * mvObject.right))
+	  seekTo += getIncrement(delta, mvObject.right)
     }
     if (isNetflix) {
       document.dispatchEvent(new CustomEvent('mvNetflixSeek', { detail: parseInt(seekTo) * 1000 })) // milliseconds
@@ -312,86 +311,98 @@ function run () {
       video.currentTime = seekTo
     }
   }
+  
+  function getIncrement (delta, mArea) {
+    return 1 * (delta < 0 ? (1 * mArea) : (-1 * mArea))
+  }
+  
+  function setBrightness(delta, vid) {
+    mvObject.brightness += 1 * (delta < 0 ? (1 * 0.1) : (-1 * 0.1))
+    mvObject.brightness = parseFloat(Math.min(Math.max(mvObject.brightness, 0), 1).toFixed(1))		
+    vid.style.filter = 'brightness(' + mvObject.brightness + ')'
+  }
+  
+  function activateFullScreenPopupFeature(delta, vid) {
+  if (delta > 0) {
+	// Close popup and stay on the current tab
+	if (document.mv_playing_on_popup) {
+	  close_popup(false)
+	} else {
+	  // The popup must open only when the video is not in fullscreen mode.
+	  if (document.fullscreenElement) {
+		document.exitFullscreen()
+
+		// We need this so that when the user scrolls out of fullscreen
+		// the popup doesn't open up unwantedly
+		document.mv_pause_function = true
+		setTimeout(() => { document.mv_pause_function = false }, 500)
+	  } else {
+		open_popup()
+	  }
+	}
+  } else if (delta < 0) {
+	// Close popup and move to the tab playing the video
+	if (document.mv_playing_on_popup) {
+	  close_popup(true)
+	} else {
+	  if (document.fullscreenElement == null) {
+		(function (x) {
+		  setTimeout(function () {
+			if (document.fullscreenElement == null) {
+			  const attribs = [...document.elementsFromPoint(e.x, e.y)
+				.filter(el => (el.contains(vid) && el.clientWidth === e.target.clientWidth) || (el.clientHeight === e.target.clientHeight))
+				.pop().querySelectorAll('*')]
+				.map(node => [...node.attributes])
+				.reduce((acc, cur) => acc.concat(cur), [])
+				.filter(attrib => attrib.nodeValue.toLowerCase().replace(' ', '').indexOf('fullscreen') >= 0)
+				.filter(attrib => attrib.ownerElement.clientWidth !== x.clientWidth &&
+				attrib.ownerElement.clientHeight !== x.clientHeight)
+			  for (const x of attribs) {
+				try {
+				  if (document.fullscreenElement == null) x.ownerElement.click()
+				} catch (e) {
+				}
+			  }
+			  setTimeout(() => {
+				if (document.fullscreenElement == null) {
+				  x.requestFullscreen()
+				}
+			  }, 100)
+			}
+		  }, 100)
+		}(vid))
+	  }
+	}
+  }
+  }
 
   function wheel (e, vid) {
     if (!document.mv_pause_function) {
       e.preventDefault()
 
-      // fixXX
       const cX = e.clientX - Math.round(vid.getBoundingClientRect().x)
-      const movimento = e.deltaY
-
-      mvObject.brightness += 1 * (movimento < 0 ? (1 * 0.1) : (-1 * 0.1))
-      mvObject.brightness = parseFloat(Math.min(Math.max(mvObject.brightness, 0), 1).toFixed(1))
+      const delta = e.deltaY
 
       if (e.shiftKey) {
-        vid.style.filter = 'brightness(' + mvObject.brightness + ')'
+		setBrightness(delta, vid)
       } else {
-        if (mvObject.mode === 'ponly') {
-          vid.currentTime += 1 * (movimento < 0 ? (1 * mvObject.middle) : (-1 * mvObject.middle))
-        } else if (mvObject.mode === 'vonly') {
-          mudaVolume(movimento, vid)
+        if (mvObject.mode === 'mode_seek_middle') {
+          vid.currentTime += getIncrement (delta, mvObject.middle)
+        } else if (mvObject.mode === 'mode_seek_all') {
+          seekVideoByAreas(cX, delta, vid)
+        } else if (mvObject.mode === 'mode_volume') {
+          changeVolume(delta, vid)
         } else {
           if (e.offsetY <= vid.clientHeight / 2) {
             if (cX < vid.clientWidth - ((90 / 100) * vid.clientWidth)) {
-              if (movimento > 0) {
-                // Close popup and stay on the current tab
-                if (document.mv_playing_on_popup) {
-                  close_popup(false)
-                } else {
-                  // The popup must open only when the video is not in fullscreen mode.
-                  if (document.fullscreenElement) {
-                    document.exitFullscreen()
-
-                    // We need this so that when the user scrolls out of fullscreen
-                    // the popup doesn't open up unwantedly
-                    document.mv_pause_function = true
-                    setTimeout(() => { document.mv_pause_function = false }, 500)
-                  } else {
-                    open_popup()
-                  }
-                }
-              } else if (movimento < 0) {
-                // Close popup and move to the tab playing the video
-                if (document.mv_playing_on_popup) {
-                  close_popup(true)
-                } else {
-                  if (document.fullscreenElement == null) {
-                    (function (x) {
-                      setTimeout(function () {
-                        if (document.fullscreenElement == null) {
-                          const attribs = [...document.elementsFromPoint(e.x, e.y)
-                            .filter(el => (el.contains(vid) && el.clientWidth === e.target.clientWidth) || (el.clientHeight === e.target.clientHeight))
-                            .pop().querySelectorAll('*')]
-                            .map(node => [...node.attributes])
-                            .reduce((acc, cur) => acc.concat(cur), [])
-                            .filter(attrib => attrib.nodeValue.toLowerCase().replace(' ', '').indexOf('fullscreen') >= 0)
-                            .filter(attrib => attrib.ownerElement.clientWidth !== x.clientWidth &&
-                            attrib.ownerElement.clientHeight !== x.clientHeight)
-                          for (const x of attribs) {
-                            try {
-                              if (document.fullscreenElement == null) x.ownerElement.click()
-                            } catch (e) {
-                            }
-                          }
-                          setTimeout(() => {
-                            if (document.fullscreenElement == null) {
-                              x.requestFullscreen()
-                            }
-                          }, 100)
-                        }
-                      }, 100)
-                    }(vid))
-                  }
-                }
-              }
+			  activateFullScreenPopupFeature(delta, vid)
             } else if (cX > vid.clientWidth - ((10 / 100) * vid.clientWidth)) {
-              mudaVelocidade(movimento, vid)
+              changePlaybackRate(delta, vid)
             } else {
-              mudaVolume(movimento, vid)
+              changeVolume(delta, vid)
             }
           } else {
-            mudaTempo(cX, movimento, vid)
+            seekVideoByAreas(cX, delta, vid)
           }
         }
       }

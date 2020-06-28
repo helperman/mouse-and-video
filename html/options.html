@@ -17,11 +17,12 @@
 			</ul>
 			<br>
 			<span id="mode">Use the whole video area to:</span><br>
-				<input id="vonly" type="radio" name="mode" value="vonly">Change volume<br>
-				<input id="ponly" type="radio" name="mode" value="ponly">Seek backward/forward ("Middle" value will be used)<br>
-                <input id="both" type="radio" name="mode" value="both" checked>Everything<br>
+				<input id="mode_volume" type="radio" name="mode" value="mode_volume"><label for="mode_volume"> Change volume</label><br>
+				<input id="mode_seek_middle" type="radio" name="mode" value="mode_seek_middle"><label for="mode_seek_middle"> Seek backward/forward ("Middle" value will be used)</label><br>
+				<input id="mode_seek_all" type="radio" name="mode" value="mode_seek_all"><label for="mode_seek_all"> Seek backward/forward (three sections will be used)</label><br>
+                <input id="mode_everything" type="radio" name="mode" value="mode_everything" checked><label for="mode_everything"> Everything</label><br>
             <br>
-            <input id="shortcut" type="checkbox" name="shortcut" value="shortcut" checked> Use shortcut to open popup
+            <input id="shortcut" type="checkbox" name="shortcut" value="shortcut" checked><label for="shortcut"> Use shortcut to open popup</label>
             <br><br>
         </form>
 

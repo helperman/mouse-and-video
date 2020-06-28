@@ -3,9 +3,10 @@ window.onload = function () {
   document.querySelector('#left').textContent = chrome.i18n.getMessage('left')
   document.querySelector('#middle').textContent = chrome.i18n.getMessage('middle')
   document.querySelector('#right').textContent = chrome.i18n.getMessage('right')
-  document.querySelector('#ponly').textContent = chrome.i18n.getMessage('ponly')
-  document.querySelector('#vonly').textContent = chrome.i18n.getMessage('vonly')
-  document.querySelector('#both').textContent = chrome.i18n.getMessage('both')
+  document.querySelector('#mode_seek_middle').textContent = chrome.i18n.getMessage('mode_seek_middle')
+  document.querySelector('#mode_volume').textContent = chrome.i18n.getMessage('mode_volume')
+  document.querySelector('#mode_seek_all').textContent = chrome.i18n.getMessage('mode_seek_all')
+  document.querySelector('#mode_everything').textContent = chrome.i18n.getMessage('mode_everything')
   document.querySelector('#mode').textContent = chrome.i18n.getMessage('mode_title')
   document.querySelector('#shortcut').textContent = chrome.i18n.getMessage('shortcut')
 
@@ -25,7 +26,7 @@ window.onload = function () {
   }
 
   chrome.storage.local.get(function (options) {
-    if (options.mode === undefined) options.mode = 'both'
+    if (options.mode === undefined) options.mode = 'mode_everything'
     if (options.shortcut === undefined) options.shortcut = true
     document.querySelector("[name='left'").value = options.left || 5
     document.querySelector("[name='middle'").value = options.middle || 2
