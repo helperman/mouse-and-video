@@ -6,16 +6,12 @@ window.onload = function () {
   }
   const pipCheckbox = document.querySelector("#pip");
   const shortcutCheckbox = document.querySelector("#shortcut");
-  document.querySelector("#fb").textContent = chrome.i18n.getMessage(
-    "fb_title"
-  );
-  document.querySelector("#left").textContent = chrome.i18n.getMessage("left");
-  document.querySelector("#middle").textContent = chrome.i18n.getMessage(
-    "middle"
-  );
-  document.querySelector("#right").textContent = chrome.i18n.getMessage(
-    "right"
-  );
+  const incrementsLegend = document.querySelector("#fb");
+  const leftInputLabel = document.querySelector("label[for=left]");
+  const middleInputLabel = document.querySelector("label[for=middle]");
+  const rightInputLabel = document.querySelector("label[for=right]");
+  const modeLegend = document.querySelector("#mode");
+
   document.querySelector(
     "#mode_seek_middle"
   ).textContent = chrome.i18n.getMessage("mode_seek_middle");
@@ -28,9 +24,12 @@ window.onload = function () {
   document.querySelector(
     "#mode_everything"
   ).textContent = chrome.i18n.getMessage("mode_everything");
-  document.querySelector("#mode").textContent = chrome.i18n.getMessage(
-    "mode_title"
-  );
+
+  modeLegend.textContent = chrome.i18n.getMessage("mode_title");
+  incrementsLegend.textContent = chrome.i18n.getMessage("fb_title");
+  leftInputLabel.textContent = chrome.i18n.getMessage("left");
+  middleInputLabel.textContent = chrome.i18n.getMessage("middle");
+  rightInputLabel.textContent = chrome.i18n.getMessage("right");
   shortcutCheckbox.textContent = chrome.i18n.getMessage("shortcut");
   pipCheckbox.textContent = chrome.i18n.getMessage("pip");
 
@@ -51,8 +50,7 @@ window.onload = function () {
     input.addEventListener("blur", (e) => {
       let value = e.target.value;
       if (e.target.type == "checkbox") value = e.target.checked;
-      console.log(e.target.id, value);
-      saveChanges(e.target.id, value);
+      saveChanges(e.target.name, value);
     });
   }
 

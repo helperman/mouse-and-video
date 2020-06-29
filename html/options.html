@@ -1,37 +1,78 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<script src="/scripts/options.js"></script>
-		<link rel="stylesheet" href="/style/style.css">
-	</head>
-	<body>
-		<form>
-			<span id="fb">Forward/backward increments (in seconds): </span>
-			<ul>
-				<li id="left">Left side: </li>
-					<input name="left" type="number"></input>
-				<li id="middle">Middle: </li>
-					<input name="middle" type="number"></input>
-				<li id="right">Right side: </li>
-					<input name="right" type="number"></input>
-			</ul>
-			<br>
-			<span id="mode">Use the whole video area to:</span><br>
-				<input id="mode_volume" type="radio" name="mode" value="mode_volume"><label for="mode_volume"> Change volume</label><br>
-				<input id="mode_seek_middle" type="radio" name="mode" value="mode_seek_middle"><label for="mode_seek_middle"> Seek backward/forward ("Middle" value will be used)</label><br>
-				<input id="mode_seek_all" type="radio" name="mode" value="mode_seek_all"><label for="mode_seek_all"> Seek backward/forward (three sections will be used)</label><br>
-                <input id="mode_everything" type="radio" name="mode" value="mode_everything" checked><label for="mode_everything"> Everything</label><br>
-			<br>
-			<fieldset id="pip-field">
-				<legend>PIP (Picture-in-Picture)</legend>
-				<input id="pip" type="checkbox" name="pip" value="pip"><label for="pip"> Enabled </label>
-				<br>
-				<input id="shortcut" type="checkbox" name="shortcut" value="shortcut"><label for="shortcut"> Use wheel combo to activate PIP</label>				
-			</fieldset>
-            <br><br>
-        </form>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="/scripts/options.js"></script>
+    <link rel="stylesheet" href="/style/style.css" />
+  </head>
+  <body>
+    <form>
+      <fieldset id="increments">
+        <legend id="fb"></legend>
+        <label for="left"></label>
+        <input name="left" type="number" /><br />
+        <label for="middle"></label>
+        <input name="middle" type="number" /><br />
+        <label for="right"></label>
+        <input name="right" type="number" /><br />
+      </fieldset>
+      <br />
+      <fieldset>
+        <legend id="mode"></legend>
+        <input
+          id="mode_volume"
+          type="radio"
+          name="mode"
+          value="mode_volume"
+        /><label for="mode_volume"> Change volume</label><br />
+        <input
+          id="mode_seek_middle"
+          type="radio"
+          name="mode"
+          value="mode_seek_middle"
+        /><label for="mode_seek_middle">
+          Seek backward/forward ("Middle" value will be used)</label
+        ><br />
+        <input
+          id="mode_seek_all"
+          type="radio"
+          name="mode"
+          value="mode_seek_all"
+        /><label for="mode_seek_all">
+          Seek backward/forward (three sections will be used)</label
+        ><br />
+        <input
+          id="mode_everything"
+          type="radio"
+          name="mode"
+          value="mode_everything"
+          checked
+        /><label for="mode_everything"> Everything</label><br />
+      </fieldset>
 
-        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6JQALCHHCL9S6&currency_code=BRL&source=url" target="_blank">Donate</a>
-	</body>
+      <br />
+      <fieldset id="pip-field">
+        <legend>PIP (Picture-in-Picture)</legend>
+        <input id="pip" type="checkbox" name="pip" value="pip" /><label
+          for="pip"
+        >
+          Enabled
+        </label>
+        <br />
+        <input
+          id="shortcut"
+          type="checkbox"
+          name="shortcut"
+          value="shortcut"
+        /><label for="shortcut"> Use wheel combo to activate PIP</label>
+      </fieldset>
+      <br /><br />
+    </form>
+
+    <a
+      href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6JQALCHHCL9S6&currency_code=BRL&source=url"
+      target="_blank"
+      >Donate</a
+    >
+  </body>
 </html>

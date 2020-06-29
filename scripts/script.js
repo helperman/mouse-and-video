@@ -129,7 +129,6 @@ chrome.runtime.onMessage.addListener(function (message) {
           image.src = video[1];
           document.onclick = () => div.remove();
           image.onclick = () => {
-            // div.remove()
             browser.runtime.sendMessage({
               video_selected: {
                 tabTitle: video[0],
@@ -366,79 +365,79 @@ function run() {
     vid.style.filter = "brightness(" + mvObject.brightness + ")";
   }
 
-  function activateFullScreenPopupFeature(delta, vid) {
-    if (delta > 0) {
-      // Close popup and stay on the current tab
-      if (document.mv_playing_on_popup) {
-        close_popup(false);
-      } else {
-        // The popup must open only when the video is not in fullscreen mode.
-        if (document.fullscreenElement) {
-          document.exitFullscreen();
+  // function activateFullScreenPopupFeature(delta, vid) {
+  //   if (delta > 0) {
+  //     // Close popup and stay on the current tab
+  //     if (document.mv_playing_on_popup) {
+  //       close_popup(false);
+  //     } else {
+  //       // The popup must open only when the video is not in fullscreen mode.
+  //       if (document.fullscreenElement) {
+  //         document.exitFullscreen();
 
-          // We need this so that when the user scrolls out of fullscreen
-          // the popup doesn't open up unwantedly
-          document.mv_pause_function = true;
-          setTimeout(() => {
-            document.mv_pause_function = false;
-          }, 500);
-        } else {
-          open_popup();
-        }
-      }
-    } else if (delta < 0) {
-      // Close popup and move to the tab playing the video
-      if (document.mv_playing_on_popup) {
-        close_popup(true);
-      } else {
-        if (document.fullscreenElement == null) {
-          (function (x) {
-            setTimeout(function () {
-              if (document.fullscreenElement == null) {
-                const attribs = [
-                  ...document
-                    .elementsFromPoint(e.x, e.y)
-                    .filter(
-                      (el) =>
-                        (el.contains(vid) &&
-                          el.clientWidth === e.target.clientWidth) ||
-                        el.clientHeight === e.target.clientHeight
-                    )
-                    .pop()
-                    .querySelectorAll("*"),
-                ]
-                  .map((node) => [...node.attributes])
-                  .reduce((acc, cur) => acc.concat(cur), [])
-                  .filter(
-                    (attrib) =>
-                      attrib.nodeValue
-                        .toLowerCase()
-                        .replace(" ", "")
-                        .indexOf("fullscreen") >= 0
-                  )
-                  .filter(
-                    (attrib) =>
-                      attrib.ownerElement.clientWidth !== x.clientWidth &&
-                      attrib.ownerElement.clientHeight !== x.clientHeight
-                  );
-                for (const x of attribs) {
-                  try {
-                    if (document.fullscreenElement == null)
-                      x.ownerElement.click();
-                  } catch (e) {}
-                }
-                setTimeout(() => {
-                  if (document.fullscreenElement == null) {
-                    x.requestFullscreen();
-                  }
-                }, 100);
-              }
-            }, 100);
-          })(vid);
-        }
-      }
-    }
-  }
+  //         // We need this so that when the user scrolls out of fullscreen
+  //         // the popup doesn't open up unwantedly
+  //         document.mv_pause_function = true;
+  //         setTimeout(() => {
+  //           document.mv_pause_function = false;
+  //         }, 500);
+  //       } else {
+  //         open_popup();
+  //       }
+  //     }
+  //   } else if (delta < 0) {
+  //     // Close popup and move to the tab playing the video
+  //     if (document.mv_playing_on_popup) {
+  //       close_popup(true);
+  //     } else {
+  //       if (document.fullscreenElement == null) {
+  //         (function (x) {
+  //           setTimeout(function () {
+  //             if (document.fullscreenElement == null) {
+  //               const attribs = [
+  //                 ...document
+  //                   .elementsFromPoint(e.x, e.y)
+  //                   .filter(
+  //                     (el) =>
+  //                       (el.contains(vid) &&
+  //                         el.clientWidth === e.target.clientWidth) ||
+  //                       el.clientHeight === e.target.clientHeight
+  //                   )
+  //                   .pop()
+  //                   .querySelectorAll("*"),
+  //               ]
+  //                 .map((node) => [...node.attributes])
+  //                 .reduce((acc, cur) => acc.concat(cur), [])
+  //                 .filter(
+  //                   (attrib) =>
+  //                     attrib.nodeValue
+  //                       .toLowerCase()
+  //                       .replace(" ", "")
+  //                       .indexOf("fullscreen") >= 0
+  //                 )
+  //                 .filter(
+  //                   (attrib) =>
+  //                     attrib.ownerElement.clientWidth !== x.clientWidth &&
+  //                     attrib.ownerElement.clientHeight !== x.clientHeight
+  //                 );
+  //               for (const x of attribs) {
+  //                 try {
+  //                   if (document.fullscreenElement == null)
+  //                     x.ownerElement.click();
+  //                 } catch (e) {}
+  //               }
+  //               setTimeout(() => {
+  //                 if (document.fullscreenElement == null) {
+  //                   x.requestFullscreen();
+  //                 }
+  //               }, 100);
+  //             }
+  //           }, 100);
+  //         })(vid);
+  //       }
+  //     }
+  //   }
+  // }
 
   function wheel(e, vid) {
     if (!document.mv_pause_function) {
@@ -459,7 +458,79 @@ function run() {
         } else {
           if (e.offsetY <= vid.clientHeight / 2) {
             if (cX < vid.clientWidth - (90 / 100) * vid.clientWidth) {
-              activateFullScreenPopupFeature(delta, vid);
+              if (delta > 0) {
+                // Close popup and stay on the current tab
+                if (document.mv_playing_on_popup) {
+                  close_popup(false);
+                } else {
+                  // The popup must open only when the video is not in fullscreen mode.
+                  if (document.fullscreenElement) {
+                    document.exitFullscreen();
+
+                    // We need this so that when the user scrolls out of fullscreen
+                    // the popup doesn't open up unwantedly
+                    document.mv_pause_function = true;
+                    setTimeout(() => {
+                      document.mv_pause_function = false;
+                    }, 500);
+                  } else {
+                    open_popup();
+                  }
+                }
+              } else if (delta < 0) {
+                // Close popup and move to the tab playing the video
+                if (document.mv_playing_on_popup) {
+                  close_popup(true);
+                } else {
+                  if (document.fullscreenElement == null) {
+                    (function (x) {
+                      setTimeout(function () {
+                        if (document.fullscreenElement == null) {
+                          const attribs = [
+                            ...document
+                              .elementsFromPoint(e.x, e.y)
+                              .filter(
+                                (el) =>
+                                  (el.contains(vid) &&
+                                    el.clientWidth === e.target.clientWidth) ||
+                                  el.clientHeight === e.target.clientHeight
+                              )
+                              .pop()
+                              .querySelectorAll("*"),
+                          ]
+                            .map((node) => [...node.attributes])
+                            .reduce((acc, cur) => acc.concat(cur), [])
+                            .filter(
+                              (attrib) =>
+                                attrib.nodeValue
+                                  .toLowerCase()
+                                  .replace(" ", "")
+                                  .indexOf("fullscreen") >= 0
+                            )
+                            .filter(
+                              (attrib) =>
+                                attrib.ownerElement.clientWidth !==
+                                  x.clientWidth &&
+                                attrib.ownerElement.clientHeight !==
+                                  x.clientHeight
+                            );
+                          for (const x of attribs) {
+                            try {
+                              if (document.fullscreenElement == null)
+                                x.ownerElement.click();
+                            } catch (e) {}
+                          }
+                          setTimeout(() => {
+                            if (document.fullscreenElement == null) {
+                              x.requestFullscreen();
+                            }
+                          }, 100);
+                        }
+                      }, 100);
+                    })(vid);
+                  }
+                }
+              }
             } else if (cX > vid.clientWidth - (10 / 100) * vid.clientWidth) {
               changePlaybackRate(delta, vid);
             } else {
